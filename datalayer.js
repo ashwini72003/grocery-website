@@ -1,132 +1,79 @@
-/* ===========================
-   FreshBasket Data Layer v1
-   Works for Adobe Analytics
-   =========================== */
+/* ================================
+   Adobe Data Layer - FreshBasket
+   Tracks ONLY BUTTON EVENTS + Page Info
+   Shows in Console
+   ================================ */
  
-window.digitalData = window.digitalData || {};
-window.digitalData.events = window.digitalData.events || [];
+window.adobeDataLayer = window.adobeDataLayer || [];
  
-// Helper: current time
+/* ✅ Helper: ISO Time */
 function dlTime() {
   return new Date().toISOString();
 }
  
-// Helper: get query params
-function getParam(name) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(name);
-}
- 
-// Helper: push event (and show in console)
+/* ✅ Helper: push event to adobeDataLayer */
 function dlPush(eventObj) {
   const payload = {
     ...eventObj,
     timestamp: dlTime(),
-    pageURL: window.location.href
+    pageURL: window.location.href,
+    pageName: document.title
   };
  
-  window.digitalData.events.push(payload);
+  // ✅ Push to Adobe Data Layer
+  window.adobeDataLayer.push(payload);
  
-  console.log("%c[DL EVENT] " + payload.event, "color: #00ff00; font-weight:bold;");
- 
-  // 👉 If Adobe Launch / AppMeasurement exists, trigger here later
-  // Example (future):
-  // if (window._satellite) _satellite.track(payload.event);
+  // ✅ Show event name + details
+  console.log("%c[ADOBE DL EVENT] " + payload.event, "color:#00ff00; font-weight:bold;");
+  console.table(payload);
 }
  
-// Helper: get cart from localStorage
+/* ✅ Cart helper */
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
 }
  
-// Helper: calculate cart total
-function cartTotal(cart) {
+/* ✅ Cart total helper */
+function getCartTotal(cart) {
   return cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
 }
  
-/* ===========================
-   Auto Page Load Tracking
-   =========================== */
-dlPush({
-  event: "page_load",
-  pageName: document.title || "Unknown Page"
-});
+/* =================================================
+   ✅ BUTTON EVENTS (ONLY)
+   These functions will be called from your buttons
+   ================================================= */
  
-/* ===========================
-   Page Type Detection
-   =========================== */
-const path = window.location.pathname.toLowerCase();
- 
-if (path.includes("index.html")) {
+/* ✅ Add to Cart button event */
+window.trackAddToCartClick = function(productObj, qty) {
   dlPush({
-    event: "home_view"
-  });
-}
- 
-if (path.includes("category.html")) {
-  const cat = getParam("cat") || "unknown";
-  dlPush({
-    event: "category_view",
-    categoryName: cat
-  });
-}
- 
-if (path.includes("product.html")) {
-  const productKey = getParam("product") || "unknown";
-  dlPush({
-    event: "product_view",
-    productKey: productKey
-  });
-}
- 
-if (path.includes("cart.html")) {
-  const cart = getCart();
- 
-  dlPush({
-    event: "cart_view",
-    cartCount: cart.length,
-    cartTotal: cartTotal(cart),
-    cartItems: cart
-  });
-}
- 
-if (path.includes("checkout.html")) {
-  const cart = getCart();
- 
-  dlPush({
-    event: "checkout_view",
-    cartCount: cart.length,
-    cartTotal: cartTotal(cart)
-  });
-}
- 
-if (path.includes("success.html")) {
-  const lastOrder = JSON.parse(localStorage.getItem("lastOrder")) || [];
- 
-  dlPush({
-    event: "purchase_success",
-    orderItems: lastOrder,
-    orderTotal: cartTotal(lastOrder)
-  });
-}
- 
-/* ===========================
-   Manual Events (buttons etc.)
-   =========================== */
- 
-// Make it globally usable inside HTML onclick=""
-window.trackAddToCart = function(productObj, qty) {
-  dlPush({
-    event: "add_to_cart",
-    product: productObj,
-    quantity: qty
+    event: "add_to_cart_click",
+    product: {
+      name: productObj?.name || "unknown",
+      price: productObj?.price || 0
+    },
+    quantity: Number(qty)
   });
 };
  
-window.trackRemoveFromCart = function(productObj) {
+/* ✅ Checkout button click event */
+window.trackCheckoutClick = function() {
+  const cart = getCart();
+ 
   dlPush({
-    event: "remove_from_cart",
-    product: productObj
+    event: "checkout_click",
+    cartCount: cart.length,
+    cartTotal: getCartTotal(cart)
   });
-
+};
+ 
+/* ✅ Purchase / Place order button click event */
+window.trackPurchaseClick = function() {
+  const cart = getCart();
+ 
+  dlPush({
+    event: "purchase_click",
+    cartCount: cart.length,
+    cartTotal: getCartTotal(cart),
+    orderItems: cart
+  });
 };
