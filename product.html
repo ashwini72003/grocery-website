@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+ 
+<div class="container">
+  <div class="card">
+    <h2 id="productName"></h2>
+    <p class="price" id="productPrice"></p>
+ 
+    <label>Quantity:</label><br><br>
+    <input type="number" id="qty" value="1" min="1">
+ 
+    <br><br>
+    <button type="button" onclick="addToCart()">Add to Cart</button>
+ 
+    <br><br>
+    <a href="cart.html"><button type="button">Go to Cart</button></a>
+  </div>
+</div>
+ 
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get("product");
+ 
+  const products = {
+    apple: { name: "Apple", price: 120 },
+    banana: { name: "Banana", price: 40 },
+    tomato: { name: "Tomato", price: 30 },
+    potato: { name: "Potato", price: 25 },
+    milk: { name: "Milk", price: 50 },
+    butter: { name: "Butter", price: 120 },
+    biscuits: { name: "Biscuits", price: 30 },
+    chips: { name: "Chips", price: 20 }
+  };
+ 
+  const product = products[key];
+ 
+  document.getElementById("productName").innerText = product.name;
+  document.getElementById("productPrice").innerText = "₹" + product.price;
+ 
+  function addToCart() {
+    const qty = document.getElementById("qty").value;
+ 
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+ 
+    cart.push({
+      name: product.name,
+      price: product.price,
+      qty: Number(qty)
+    });
+ 
+    localStorage.setItem("cart", JSON.stringify(cart));
+ 
+    alert("Added to cart ✅");
+    window.location.href = "cart.html";
+  }
+</script>
+ 
+</body>
+</html>
