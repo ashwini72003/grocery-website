@@ -27,8 +27,7 @@ function dlPush(eventObj) {
  
   window.digitalData.events.push(payload);
  
-  console.log("%c[DataLayer Event]", "color: green; font-weight: bold;");
-  console.log(payload);
+  console.log("%c[DL EVENT] " + payload.event, "color: #00ff00; font-weight:bold;");
  
   // 👉 If Adobe Launch / AppMeasurement exists, trigger here later
   // Example (future):
@@ -129,4 +128,5 @@ window.trackRemoveFromCart = function(productObj) {
     event: "remove_from_cart",
     product: productObj
   });
+
 };
