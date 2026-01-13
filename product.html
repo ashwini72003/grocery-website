@@ -44,7 +44,7 @@
  
   function addToCart() {
     const qty = document.getElementById("qty").value;
- 
+    trackAddToCart(product, qty);
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
  
     cart.push({
@@ -63,3 +63,4 @@
 </body>
 
 </html>
+
