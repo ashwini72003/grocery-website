@@ -1,6 +1,6 @@
 window.adobeDataLayer = window.adobeDataLayer || [];
  
-function dlPush(eventObj) {
+window.dlPush = function (eventObj) {
   const payload = {
     ...eventObj,
     timestamp: new Date().toISOString(),
@@ -11,11 +11,18 @@ function dlPush(eventObj) {
   window.adobeDataLayer.push(payload);
  
   console.log("%c[ADOBE DL EVENT] " + payload.event, "color:#00ff00; font-weight:bold;");
-  console.table(payload);
-}
+  console.log(payload);
+ 
+  return payload;
+};
+ 
+// ✅ Auto Page Load Event
+document.addEventListener("DOMContentLoaded", function () {
+  dlPush({ event: "page_load" });
+});
  
 // ✅ Button Click Events
-window.trackAddToCartClick = function(productObj, qty) {
+window.trackAddToCartClick = function (productObj, qty) {
   dlPush({
     event: "add_to_cart_click",
     product: {
@@ -26,10 +33,10 @@ window.trackAddToCartClick = function(productObj, qty) {
   });
 };
  
-window.trackCheckoutClick = function() {
+window.trackCheckoutClick = function () {
   dlPush({ event: "checkout_click" });
 };
  
-window.trackPurchaseClick = function() {
+window.trackPurchaseClick = function () {
   dlPush({ event: "purchase_click" });
 };
