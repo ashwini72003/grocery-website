@@ -1,60 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Category</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://assets.adobedtm.com/236ca7d75265/7bb81011787b/launch-125febc57501-development.min.js" async></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Category | FreshBasket</title>
+ 
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+ 
+  <!-- Adobe Launch (ONLY if you have correct link) -->
+  <!-- <script src="https://assets.adobedtm.com/xxxxxxxx/launch-xxxx.min.js" async></script> -->
 </head>
+ 
 <body>
+  <div class="container">
+    <h1 id="title">Category</h1>
+    <div id="list"></div>
  
-<div class="container">
-  <h2 id="title"></h2>
-  <div id="list"></div>
+    <br />
+    <a href="cart.html"><button type="button">Go to Cart</button></a>
+  </div>
  
-  <br>
-  <a href="cart.html"><button>Go to Cart</button></a>
-</div>
+  <script>
+    // Get category from URL
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get("cat") || "fruits";
  
-<script>
-  const params = new URLSearchParams(window.location.search);
-  let cat = params.get("cat") || "fruits";
+    // Products Data
+    const products = {
+      fruits: [
+        { key: "apple", name: "Apple", price: 120 },
+        { key: "banana", name: "Banana", price: 40 }
+      ],
+      vegetables: [
+        { key: "tomato", name: "Tomato", price: 30 },
+        { key: "potato", name: "Potato", price: 25 }
+      ],
+      dairy: [
+        { key: "milk", name: "Milk", price: 50 },
+        { key: "butter", name: "Butter", price: 120 }
+      ],
+      snacks: [
+        { key: "biscuits", name: "Biscuits", price: 30 },
+        { key: "chips", name: "Chips", price: 20 }
+      ]
+    };
  
-  const products = {
-    fruits: [
-      { key: "apple", name: "Apple", price: 120 },
-      { key: "banana", name: "Banana", price: 40 }
-    ],
-    vegetables: [
-      { key: "tomato", name: "Tomato", price: 30 },
-      { key: "potato", name: "Potato", price: 25 }
-    ],
-    dairy: [
-      { key: "milk", name: "Milk", price: 50 },
-      { key: "butter", name: "Butter", price: 120 }
-    ],
-    snacks: [
-      { key: "biscuits", name: "Biscuits", price: 30 },
-      { key: "chips", name: "Chips", price: 20 }
-    ]
-  };
+    // If wrong category typed
+    if (!products[cat]) {
+      document.getElementById("title").innerText = "Category not found ❌";
+      document.getElementById("list").innerHTML = `<p>No products available.</p>`;
+    } else {
+      document.getElementById("title").innerText =
+        cat.charAt(0).toUpperCase() + cat.slice(1);
  
-  document.getElementById("title").innerText = cat.toUpperCase();
-  const list = document.getElementById("list");
+      // Show products
+      products[cat].forEach((p) => {
+        document.getElementById("list").innerHTML += `
+          <div class="card">
+            <h3>${p.name}</h3>
+            <p class="price">₹${p.price}</p>
+            <a href="product.html?product=${p.key}">
+              <button type="button">View Product</button>
+            </a>
+          </div>
+        `;
+      });
+    }
+  </script>
  
-  products[cat].forEach(p => {
-    list.innerHTML += `
-      <div class="card">
-        <h3>${p.name}</h3>
-        <p class="price">₹${p.price}</p>
-        <a href="product.html?product=${p.key}">
-          <button>View Product</button>
-        </a>
-      </div>
-    `;
-  });
-</script>
-<script src="datalayer.js"></script> 
+  <!-- DataLayer should be loaded at END -->
+  <script src="datalayer.js"></script>
 </body>
-
 </html>
-
