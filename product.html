@@ -3,67 +3,79 @@
 <head>
   <title>Product</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://assets.adobedtm.com/236ca7d75265/7bb81011787b/launch-125febc57501-development.min.js" async></script>
 </head>
+ 
 <body>
+  <h2 id="productName">Loading...</h2>
+  <p id="productPrice"></p>
  
-<div class="container">
-  <div class="card">
-    <h2 id="productName"></h2>
-    <p class="price" id="productPrice"></p>
+  <label>Quantity:</label>
+  <input type="number" id="qty" value="1" min="1">
  
-    <label>Quantity:</label><br><br>
-    <input type="number" id="qty" value="1" min="1">
+  <br><br>
  
-    <br><br>
-    <button type="button" onclick="addToCart()">Add to Cart</button>
+  <button type="button" id="addToCartBtn">Add to Cart</button>
  
-    <br><br>
-    <a href="cart.html"><button type="button">Go to Cart</button></a>
-  </div>
-</div>
+  <br><br>
+  <a href="cart.html">Go to Cart</a>
  
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const key = params.get("product");
+  <script>
+    const products = {
+      apple: { key: "apple", name: "Apple", price: 120 },
+      banana: { key: "banana", name: "Banana", price: 40 },
+      tomato: { key: "tomato", name: "Tomato", price: 30 },
+      potato: { key: "potato", name: "Potato", price: 25 },
+      milk: { key: "milk", name: "Milk", price: 50 },
+      butter: { key: "butter", name: "Butter", price: 120 },
+      biscuits: { key: "biscuits", name: "Biscuits", price: 30 },
+      chips: { key: "chips", name: "Chips", price: 20 }
+    };
  
-  const products = {
-    apple: { name: "Apple", price: 120 },
-    banana: { name: "Banana", price: 40 },
-    tomato: { name: "Tomato", price: 30 },
-    potato: { name: "Potato", price: 25 },
-    milk: { name: "Milk", price: 50 },
-    butter: { name: "Butter", price: 120 },
-    biscuits: { name: "Biscuits", price: 30 },
-    chips: { name: "Chips", price: 20 }
-  };
+    const params = new URLSearchParams(window.location.search);
+    const productKey = params.get("product");
  
-  const product = products[key];
+    console.log("Product Key from URL:", productKey);
  
-  document.getElementById("productName").innerText = product.name;
-  document.getElementById("productPrice").innerText = "₹" + product.price;
+    const product = products[productKey];
  
-  function addToCart() {
-    const qty = document.getElementById("qty").value;
-    trackAddToCart(product, qty);
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (!product) {
+      document.getElementById("productName").innerText = "Product not found ❌";
+      document.getElementById("productPrice").innerText = "";
+      document.getElementById("addToCartBtn").style.display = "none";
+    } else {
+      document.getElementById("productName").innerText = product.name;
+      document.getElementById("productPrice").innerText = "Price: ₹" + product.price;
+    }
  
-    cart.push({
-      name: product.name,
-      price: product.price,
-      qty: Number(qty)
-    });
+    function addToCart() {
+      if (!product) return;
  
-    localStorage.setItem("cart", JSON.stringify(cart));
+      const qty = Number(document.getElementById("qty").value);
  
-    alert("Added to cart ✅");
-    //window.location.href = "cart.html";
-  }
-</script>
-<script src="datalayer.js"></script> 
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+ 
+      const existing = cart.find(item => item.key === product.key);
+ 
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({
+          key: product.key,
+          name: product.name,
+          price: product.price,
+          qty: qty
+        });
+      }
+ 
+      localStorage.setItem("cart", JSON.stringify(cart));
+ 
+      alert(product.name + " Added ✅");
+      console.log("Updated Cart:", cart);
+    }
+ 
+    document.getElementById("addToCartBtn").addEventListener("click", addToCart);
+  </script>
+ 
+  <script src="datalayer.js"></script>
 </body>
-
 </html>
-
-
-
